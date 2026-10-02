@@ -34,3 +34,6 @@ ignore = ["E501"]   # long German prompt texts are intentional
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[browser]
+gatherUsageStats = false
