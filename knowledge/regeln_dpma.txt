@@ -1,0 +1,27 @@
+[Zusammenfassung] Die Zusammenfassung soll aus nicht mehr als 1.500 Zeichen bestehen. (§ 13 PatV)
+
+[Zusammenfassung] Die Zusammenfassung dient ausschließlich der technischen Unterrichtung der Öffentlichkeit. Sie gibt kurz das technische Gebiet, das Problem, den Kern der Lösung und die hauptsächliche Verwendung an. Keine Werbeaussagen, keine Wörter wie "intelligent" oder "optimal". (§ 36 PatG)
+
+[Ausführungsbeispiel] Die Erfindung muss so deutlich und vollständig offenbart sein, dass ein Fachmann sie ausführen kann. Es genügt mindestens ein ausführbarer Weg. (§ 34 Abs. 4 PatG)
+
+[Ausführungsbeispiel] Alle Zahlenwerte und Merkmale aus der Erfindungsbeschreibung und den Ansprüchen müssen im Ausführungsbeispiel widerspruchsfrei übernommen werden. Ein Wert, der bekannt ist, darf nicht als Platzhalter erscheinen. (Praxisregel)
+
+[Ausführungsbeispiel] Begriffe sind in der gesamten Anmeldung einheitlich zu verwenden. (PatV, Formvorschriften)
+
+[Patentansprüche] Patentansprüche können einteilig oder zweiteilig (Oberbegriff und kennzeichnender Teil) gefasst werden. Sie werden fortlaufend mit arabischen Ziffern nummeriert. (§ 9 PatV)
+
+[Patentansprüche] Unteransprüche enthalten einen Rückbezug auf mindestens einen vorhergehenden Anspruch und geben vorteilhafte Ausgestaltungen an. (§ 9 PatV)
+
+[Patentansprüche] Der Hauptanspruch soll so breit wie möglich sein. Zahlenwerte, Zeitintervalle und Einheiten gehören in Unteransprüche. (Praxisregel)
+
+[Patentansprüche] Ansprüche müssen klar sein. Relative Begriffe wie "schlechter", "etwa" oder "signifikant" sind zu vermeiden. (Prüfungspraxis Klarheit)
+
+[Titel] Die Bezeichnung der Erfindung ist kurz und genau technisch zu fassen. Keine Fantasie- oder Markennamen. (§ 10 PatV)
+
+[Technisches Gebiet] Die Beschreibung gibt zu Beginn das technische Gebiet an, zu dem die Erfindung gehört. (§ 10 PatV)
+
+[Stand der Technik] Der bekannte Stand der Technik wird angegeben, soweit er dem Anmelder bekannt ist. Die neuen Merkmale der Erfindung dürfen nicht als bekannt beschrieben werden. (§ 10 PatV, Praxisregel)
+
+[Aufgabe] Das technische Problem (Aufgabe) wird angegeben, ohne die Lösung vorwegzunehmen. (§ 10 PatV)
+
+[Lösung und Vorteile] Die Lösung des Problems und die vorteilhaften Wirkungen der Erfindung werden angegeben, bezogen auf den Stand der Technik. (§ 10 PatV)
