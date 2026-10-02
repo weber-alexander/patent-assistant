@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from functools import cache
 
 import ollama
 
@@ -45,6 +46,15 @@ def pull_model(name: str, on_progress: ProgressCallback) -> None:
     on_progress(1.0)
 
 
+@cache
+def supports_thinking(model: str) -> bool:
+    """True if the model has a reasoning mode that can be switched off."""
+    try:
+        return "thinking" in (client.show(model).capabilities or [])
+    except Exception:
+        return False
+
+
 def generate(
     model: str,
     system_prompt: str,
@@ -58,6 +68,8 @@ def generate(
     because the final length of an answer is unknown in advance.
     """
     text = ""
+    # Reasoning output is slow and not needed for drafting, so switch it off
+    extra = {"think": False} if supports_thinking(model) else {}
     stream = client.chat(
         model=model,
         messages=[
@@ -66,6 +78,7 @@ def generate(
         ],
         stream=True,
         options=settings.llm_options,
+        **extra,
     )
     for chunk in stream:
         text += chunk.message.content or ""

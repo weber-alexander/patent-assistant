@@ -28,12 +28,19 @@ class Settings:
 
     @property
     def required_models(self) -> tuple[str, ...]:
-        """Models that must be available in Ollama."""
-        return (self.chat_models[0], self.embed_model)
+        """All selectable chat models plus the embedding model must be installed."""
+        return (*self.chat_models, self.embed_model)
+
+
+# Readable names for the model selection in the UI
+MODEL_LABELS = {
+    "qwen3:4b-instruct": "Qwen3 4B Instruct (schnell, Standard)",
+    "qwen3:8b": "Qwen3 8B (bessere Qualität, langsamer)",
+}
 
 
 def load_settings() -> Settings:
-    models = os.getenv("PA_CHAT_MODELS", "qwen3:4b-instruct,qwen3:1.7b")
+    models = os.getenv("PA_CHAT_MODELS", "qwen3:4b-instruct,qwen3:8b")
     return Settings(
         # Explicit loopback address: OLLAMA_HOST=0.0.0.0 does not work as a client target
         ollama_host=os.getenv("PA_OLLAMA_HOST", "http://127.0.0.1:11434"),

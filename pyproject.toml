@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "streamlit>=1.40",
-    "ollama>=0.4",
+    "ollama>=0.5",
     "python-docx>=1.1",
     "pypdf>=5.0",
 ]

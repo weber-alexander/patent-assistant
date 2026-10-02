@@ -11,7 +11,7 @@ import streamlit as st
 
 from patent_assistant import document_export, file_import, knowledge_base, llm, projects
 from patent_assistant.claim_checker import Finding, check_claims
-from patent_assistant.config import settings
+from patent_assistant.config import MODEL_LABELS, settings
 from patent_assistant.prompts import (
     CLAIM_FIX_PROMPT,
     DESCRIPTION_PARTS,
@@ -114,8 +114,9 @@ def ensure_environment() -> None:
         st.title("Einrichtung")
         st.info(
             "Für den ersten Start werden folgende KI-Modelle benötigt: "
-            f"**{', '.join(missing)}**. Der Download erfolgt einmalig und "
-            "kann je nach Internetverbindung einige Minuten dauern."
+            f"**{', '.join(missing)}**. Der Download (bei Erstinstallation "
+            "insgesamt ca. 9 GB) erfolgt einmalig und kann je nach "
+            "Internetverbindung 10 bis 30 Minuten dauern."
         )
         if st.button("Modelle jetzt herunterladen", type="primary"):
             for name in missing:
@@ -437,7 +438,14 @@ def sidebar() -> str:
 
         st.markdown('<p class="nav-title">EINSTELLUNGEN</p>', unsafe_allow_html=True)
         with st.expander("⚙️ KI-Einstellungen"):
-            st.selectbox("Modell", settings.chat_models, key="model")
+            st.selectbox(
+                "Modell",
+                settings.chat_models,
+                key="model",
+                format_func=lambda name: MODEL_LABELS.get(name, name),
+                help="Das größere Modell liefert bessere Texte, braucht aber "
+                "mehr Zeit und Arbeitsspeicher (empfohlen ab 16 GB RAM).",
+            )
             st.toggle(
                 "Richtlinien berücksichtigen (RAG)",
                 key="use_rag",
@@ -532,7 +540,7 @@ def page_invention() -> None:
         "Erstellt nacheinander Ansprüche, Checker-Korrektur, Titel, Beschreibung und "
         "Zusammenfassung. Korrekturlesen danach gezielt pro Abschnitt. Dauer: einige Minuten."
     )
-    include_questions = st.checkbox("Erfinderfragen mit erstellen", value=True)
+    include_questions = st.checkbox("Erfinderfragen mit erstellen", value=False)
     if any(data()[key].strip() for key in SECTIONS):
         st.warning(
             "Vorhandene Texte werden überschrieben. Jeder Abschnitt lässt sich danach "
