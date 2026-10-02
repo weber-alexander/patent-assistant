@@ -13,3 +13,6 @@ projects/*
 # Lokal erzeugt bzw. große Dateien
 knowledge/index.json
 knowledge/*.pdf
+
+# Local launcher state
+.shortcuts-created

@@ -5,6 +5,8 @@ Start with:  uv run streamlit run src/patent_assistant/app.py
 
 from __future__ import annotations
 
+import html
+
 import streamlit as st
 
 from patent_assistant import document_export, file_import, knowledge_base, llm, projects
@@ -34,7 +36,7 @@ ABSTRACT_MAX_CHARS = 1500
 CSS = """
 <style>
 footer {visibility: hidden;}
-.block-container {padding-top: 2rem; max-width: 1100px;}
+.block-container {padding-top: 4rem; max-width: 1100px;}
 h1, h2, h3 {color: #2C4A66;}
 section[data-testid="stSidebar"] {background-color: #E2E7EC;}
 .nav-title {font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em;
@@ -56,6 +58,13 @@ section[data-testid="stSidebar"] {background-color: #E2E7EC;}
          color: #3B5B7A; margin: 12px 0 0 0;}
 .doc-break {text-align: center; color: #9AA5B1; font-size: 12px; padding-top: 4px;
             border-top: 1px dashed #C5CDD5; margin: 28px 0 12px 0;}
+.page-header {margin: 0 0 0.6rem 0;}
+.page-header .page-kicker {font-size: 0.8rem !important; font-weight: 600;
+              letter-spacing: 0.08em; color: #5B6B7A !important;
+              margin: 0 !important; line-height: 1.4;}
+.page-header .page-title {font-size: 2.6rem !important; font-weight: 700;
+              color: #1F2933 !important; margin: 0.1rem 0 0 0 !important;
+              line-height: 1.2;}
 </style>
 """
 
@@ -323,6 +332,20 @@ def show_findings(findings: list[Finding]) -> None:
         {"error": st.error, "warning": st.warning}.get(f.severity, st.info)(location + f.message)
 
 
+def page_header(page_label: str, caption: str = "") -> None:
+    """Show the project name as title and the current page above it."""
+    name = data()["project_name"].strip() or st.session_state.current_file or "Neues Projekt"
+    st.markdown(
+        '<div class="page-header">'
+        f'<div class="page-kicker">{html.escape(page_label.upper())}</div>'
+        f'<div class="page-title">{html.escape(name)}</div>'
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    if caption:
+        st.caption(caption)
+
+
 def export_button(key: str) -> None:
     st.download_button(
         "Als Word exportieren",
@@ -351,7 +374,7 @@ def _open_project(content: dict[str, str], filename: str | None) -> None:
 def _save(filename: str) -> None:
     projects.save_project(filename, data())
     st.session_state.current_file = filename
-    notify(f"Gespeichert: {filename}.json")
+    notify(f"Gespeichert: {filename}")
     st.rerun()
 
 
@@ -363,9 +386,7 @@ def sidebar() -> str:
         st.markdown('<p class="nav-title">PROJEKT</p>', unsafe_allow_html=True)
         current = st.session_state.current_file
         st.caption(
-            f"Geöffnet: **{current}.json**"
-            if current
-            else "Neues, noch nicht gespeichertes Projekt"
+            f"Geöffnet: **{current}**" if current else "Neues, noch nicht gespeichertes Projekt"
         )
 
         name_key = "w_sidebar_project_name"
@@ -385,7 +406,7 @@ def sidebar() -> str:
         if col_save_as.button("📝 Speichern unter", use_container_width=True):
             target = projects.safe_filename(data()["project_name"])
             if target != current and projects.exists(target):
-                st.error(f"'{target}.json' existiert bereits.")
+                st.error(f"'{target}' existiert bereits.")
             else:
                 _save(target)
 
@@ -431,8 +452,7 @@ def sidebar() -> str:
 
 
 def page_invention() -> None:
-    st.title("Erfindung")
-    st.caption("Grundlage für alle weiteren Texte. Je genauer, desto besser.")
+    page_header("Erfindung", "Grundlage für alle weiteren Texte. Je genauer, desto besser.")
 
     st.markdown("#### Erfindungsmeldung hochladen")
     st.caption(
@@ -528,8 +548,9 @@ def page_invention() -> None:
 
 
 def page_claims() -> None:
-    st.title("Patentansprüche")
-    st.caption("Zuerst die Ansprüche erstellen, denn die Beschreibung baut darauf auf.")
+    page_header(
+        "Patentansprüche", "Zuerst die Ansprüche erstellen, denn die Beschreibung baut darauf auf."
+    )
     section_editor("claims", "claims")
 
     st.divider()
@@ -562,7 +583,7 @@ def page_claims() -> None:
 
 
 def page_description() -> None:
-    st.title("Beschreibung")
+    page_header("Beschreibung")
     if not data()["claims"].strip():
         st.warning(
             "Noch keine Ansprüche vorhanden. Die Begriffe in der Beschreibung sind "
@@ -574,8 +595,7 @@ def page_description() -> None:
 
 
 def page_questions() -> None:
-    st.title("Fragen an den Erfinder")
-    st.caption("Interne Arbeitsnotiz. Wird nicht exportiert.")
+    page_header("Fragen an den Erfinder", "Interne Arbeitsnotiz. Wird nicht exportiert.")
     section_editor("questions", "questions")
 
 
@@ -586,7 +606,7 @@ def page_document() -> None:
 
     col_info, col_export = st.columns([3, 1])
     with col_info:
-        st.markdown("### Dokumentansicht")
+        page_header("Dokumentansicht")
         st.caption(
             f"{document_export.count_placeholders(data())} offene Platzhalter · "
             f"Checker: {errors} Fehler, {warnings} Warnungen · "
@@ -644,7 +664,7 @@ def page_document() -> None:
 
 
 def page_knowledge() -> None:
-    st.title("Wissensbasis")
+    page_header("Wissensbasis")
     st.caption(
         "Regeln und Richtlinien aus dem Ordner 'knowledge'. Werden beim Erstellen "
         "genutzt, wenn RAG in den Einstellungen aktiv ist."

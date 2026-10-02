@@ -1,6 +1,12 @@
 @echo off
 setlocal
 cd /d "%~dp0"
+rem --- Laeuft die App bereits? Dann nur den Browser oeffnen ---
+netstat -ano | findstr ":8501" | findstr "LISTENING" >nul
+if not errorlevel 1 (
+    start "" http://localhost:8501
+    exit /b 0
+)
 title Patent-Assistent
 echo.
 echo  Patent-Assistent wird gestartet ...
@@ -38,13 +44,17 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-
+rem --- Verknuepfungen einmalig anlegen ---
+if not exist ".shortcuts-created" (
+    powershell -NoProfile -ExecutionPolicy ByPass -File "scripts\create_shortcuts.ps1"
+    if not errorlevel 1 type nul > ".shortcuts-created"
+)
 rem --- 4. Browser nach kurzer Wartezeit oeffnen und App starten ---
 echo.
 echo  Die App oeffnet sich im Browser. Dieses Fenster bitte geoeffnet lassen.
 echo  Zum Beenden das Fenster schliessen.
 echo.
-start "" cmd /c "timeout /t 4 /nobreak >nul & start http://localhost:8501"
+start "" /b cmd /c "timeout /t 4 /nobreak >nul & start http://localhost:8501"
 uv run --frozen streamlit run src/patent_assistant/app.py --server.headless true
 
 pause
