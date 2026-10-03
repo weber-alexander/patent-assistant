@@ -6,6 +6,7 @@ Start with:  uv run streamlit run src/patent_assistant/app.py
 from __future__ import annotations
 
 import html
+import time
 
 import streamlit as st
 
@@ -88,11 +89,18 @@ section[data-testid="stSidebar"] {background-color: #E2E7EC;}
 # ======================================================================
 
 
+def format_duration(seconds: float) -> str:
+    """Format a duration as '2 Min. 40 Sek.' or '24 Sek.'."""
+    minutes, secs = divmod(round(seconds), 60)
+    return f"{minutes} Min. {secs} Sek." if minutes else f"{secs} Sek."
+
+
 def init_state() -> None:
     if "data" not in st.session_state:
         st.session_state.data = projects.empty_project()
     st.session_state.setdefault("backup", {})
     st.session_state.setdefault("sources", {})
+    st.session_state.setdefault("durations", {})
     st.session_state.setdefault("current_file", None)
 
 
@@ -130,8 +138,9 @@ def ensure_environment() -> None:
             "Für den ersten Start werden folgende KI-Modelle benötigt: "
             f"**{', '.join(missing)}**. Der Download (bei Erstinstallation "
             "insgesamt ca. 9 GB) erfolgt einmalig und kann je nach "
-            "Internetverbindung 10 bis 30 Minuten dauern. Natürlich können auch eigene Modelle"
-            "installiert werden und in der config-Datei (siehe ReadMe) eingestellt werden."
+            "Internetverbindung 10 bis 30 Minuten dauern. Andere Modelle "
+            "lassen sich über die Einstellung PA_CHAT_MODELS verwenden "
+            "(siehe README)."
         )
         if st.button("Modelle jetzt herunterladen", type="primary"):
             for name in missing:
@@ -241,9 +250,11 @@ def fix_claims(findings: list[Finding], on_progress) -> str:
 
 
 def run_with_progress(key: str, task, label: str = "KI schreibt") -> None:
-    """Run a single AI task with a progress bar and store the result in a field."""
+    """Run a single AI task with a progress bar, store result and duration."""
     bar = st.progress(0.0, text=f"{label} ... 0 %")
+    start = time.perf_counter()
     text = task(lambda v: bar.progress(v, text=f"{label} ... {int(v * 100)} %"))
+    st.session_state.durations[key] = time.perf_counter() - start
     st.session_state.backup[key] = data()[key]
     data()[key] = text
     st.rerun()
@@ -255,6 +266,8 @@ def generate_all(include_questions: bool) -> None:
     if include_questions:
         steps.append("questions")
     bar = st.progress(0.0, text="Starte ...")
+    durations = st.session_state.durations
+    total_start = time.perf_counter()
 
     for i, step in enumerate(steps):
         name = "Anspruchs-Checker" if step == "checker" else SECTIONS[step]["label"]
@@ -266,6 +279,8 @@ def generate_all(include_questions: bool) -> None:
             )
 
         progress(0.0)
+        step_start = time.perf_counter()
+
         if step == "checker":
             findings = check_claims(data()["claims"])
             if findings:
@@ -274,13 +289,18 @@ def generate_all(include_questions: bool) -> None:
                 if len(check_claims(fixed)) < len(findings):
                     st.session_state.backup["claims"] = data()["claims"]
                     data()["claims"] = fixed
+            # Checker time counts towards the claims
+            durations["claims"] = durations.get("claims", 0) + time.perf_counter() - step_start
             continue
 
         st.session_state.backup[step] = data()[step]
         data()[step] = draft_section(step, progress)
+        durations[step] = time.perf_counter() - step_start
 
+    total = time.perf_counter() - total_start
+    durations["__all__"] = total
     bar.progress(1.0, text="Fertig")
-    notify("Gesamtentwurf erstellt. Bitte prüfen!")
+    notify(f"Gesamtentwurf erstellt in {format_duration(total)}. Bitte prüfen!")
     st.session_state.next_page = "document"
     st.rerun()
 
@@ -314,6 +334,7 @@ def ai_toolbar(key: str, page: str) -> None:
         "Rückgängig", key=f"undo_{page}_{key}", use_container_width=True
     ):
         data()[key] = st.session_state.backup.pop(key)
+        st.session_state.durations.pop(key, None)
         st.rerun()
 
 
@@ -337,6 +358,8 @@ def section_editor(key: str, page: str) -> None:
                 st.caption(p.text)
 
     ai_toolbar(key, page)
+    if key in st.session_state.durations:
+        st.caption(f"Benötigte Zeit: {format_duration(st.session_state.durations[key])}")
 
 
 def show_findings(findings: list[Finding]) -> None:
@@ -384,6 +407,7 @@ def _open_project(content: dict[str, str], filename: str | None) -> None:
     st.session_state.data = content
     st.session_state.backup = {}
     st.session_state.sources = {}
+    st.session_state.durations = {}
     st.session_state.current_file = filename
     st.rerun()
 
@@ -636,6 +660,11 @@ def page_document() -> None:
             f"Checker: {errors} Fehler, {warnings} Warnungen · "
             "Klicke in einen Text, um ihn zu bearbeiten."
         )
+        if "__all__" in st.session_state.durations:
+            st.caption(
+                "Gesamtentwurf erstellt in "
+                f"{format_duration(st.session_state.durations['__all__'])}"
+            )
     with col_export:
         st.write("")
         export_button("export_document")
@@ -718,6 +747,7 @@ def page_knowledge() -> None:
             return
         excerpts = "\n\n".join(f"[{i}] ({p.source}) {p.text}" for i, p in enumerate(passages, 1))
         bar = st.progress(0.0, text="KI antwortet ... 0 %")
+        start = time.perf_counter()
         answer = _generate(
             LOOKUP_PROMPT,
             f"Auszüge:\n{excerpts}\n\nFrage: {question}",
@@ -726,6 +756,7 @@ def page_knowledge() -> None:
         )
         bar.empty()
         st.markdown(answer)
+        st.caption(f"Benötigte Zeit: {format_duration(time.perf_counter() - start)}")
         with st.expander("Quellen"):
             for i, p in enumerate(passages, 1):
                 st.markdown(f"**[{i}] {p.source}** ({p.score:.2f})")
