@@ -65,6 +65,20 @@ section[data-testid="stSidebar"] {background-color: #E2E7EC;}
 .page-header .page-title {font-size: 2.6rem !important; font-weight: 700;
               color: #1F2933 !important; margin: 0.1rem 0 0 0 !important;
               line-height: 1.2;}
+/* Text areas grow with their content (Chrome, Edge, Opera) */
+@supports (field-sizing: content) {
+    [data-testid="stTextArea"] textarea {
+        field-sizing: content;
+        height: auto !important;
+        min-height: 6lh;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    [data-testid="stTextArea"] [data-baseweb="textarea"] {height: auto !important;}
+    .st-key-w_invention_invention textarea {min-height: 12lh;}
+    .st-key-w_invention_known_prior_art textarea {min-height: 6lh;}
+    .st-key-paper textarea {min-height: 2lh; max-height: none;}
+}
 </style>
 """
 
@@ -116,7 +130,8 @@ def ensure_environment() -> None:
             "Für den ersten Start werden folgende KI-Modelle benötigt: "
             f"**{', '.join(missing)}**. Der Download (bei Erstinstallation "
             "insgesamt ca. 9 GB) erfolgt einmalig und kann je nach "
-            "Internetverbindung 10 bis 30 Minuten dauern."
+            "Internetverbindung 10 bis 30 Minuten dauern. Natürlich können auch eigene Modelle"
+            "installiert werden und in der config-Datei (siehe ReadMe) eingestellt werden."
         )
         if st.button("Modelle jetzt herunterladen", type="primary"):
             for name in missing:
@@ -139,8 +154,9 @@ def ensure_environment() -> None:
 
 
 def _estimate_height(text: str, minimum: int, chars_per_line: int) -> int:
+    """Fallback height for browsers without CSS field-sizing support."""
     lines = sum(len(line) // chars_per_line + 1 for line in (text or "").split("\n"))
-    return max(minimum, min(1400, lines * 26 + 30))
+    return max(minimum, min(600, lines * 24 + 24))
 
 
 def _sync(field: str, widget_key: str) -> None:
@@ -155,7 +171,7 @@ def text_field(
     minimum: int = 80,
     hide_label: bool = True,
     placeholder: str = "",
-    chars_per_line: int = 90,
+    chars_per_line: int = 140,
 ) -> None:
     """Text area that reads from and writes to the central data store."""
     widget_key = f"w_{page}_{field}"

@@ -46,13 +46,21 @@ def pull_model(name: str, on_progress: ProgressCallback) -> None:
     on_progress(1.0)
 
 
+# Model families that have a reasoning mode (fallback if Ollama cannot tell us)
+_THINKING_FAMILIES = ("qwen3", "deepseek-r1", "magistral", "gpt-oss")
+
+
 @cache
 def supports_thinking(model: str) -> bool:
-    """True if the model has a reasoning mode that can be switched off."""
+    """True if the model has a reasoning mode that must be switched off."""
     try:
-        return "thinking" in (client.show(model).capabilities or [])
+        capabilities = client.show(model).capabilities
+        if capabilities is not None:
+            return "thinking" in capabilities
     except Exception:
-        return False
+        pass
+    # Fallback: decide by name. Instruct variants have no reasoning mode.
+    return model.startswith(_THINKING_FAMILIES) and "instruct" not in model
 
 
 def generate(
@@ -81,6 +89,12 @@ def generate(
         **extra,
     )
     for chunk in stream:
+        if getattr(chunk.message, "thinking", None):
+            # Should never happen: reasoning was requested to be off
+            raise RuntimeError(
+                f"Das Modell {model} denkt trotz deaktiviertem Denkmodus. "
+                "Bitte Ollama auf die aktuelle Version aktualisieren."
+            )
         text += chunk.message.content or ""
         if on_progress:
             on_progress(min(0.95, len(text) / max(expected_length, 1)))
