@@ -19,6 +19,7 @@
 > **English summary:** A local, privacy-first drafting assistant for German patent applications.
 > It runs open-weight LLMs via Ollama, combines AI drafting with a rule-based claim checker,
 > and exports a structured Word document. No cloud, no data leaves the machine.
+> Built AI-assisted: the code was written with Claude (Anthropic), directed, tested and designed by the author.
 
 ![Dokumentansicht](docs/screenshots/dokumentansicht.png)
 
@@ -193,6 +194,26 @@ src/patent_assistant/
 - Weitere Templates (EP, PCT)
 - Rich-Text-Editor mit Formatierung
 - Startskript für macOS
+
+## Entstehung
+
+Dieses Projekt wurde **KI-gestützt entwickelt**. Der gesamte Programmcode wurde im Dialog mit
+**Claude Opus 5.5 (Anthropic)** erstellt. Ich bin kein Softwareentwickler, sondern IT-Softwareberater im
+Patentumfeld.
+
+Meine Rolle entsprach der eines Product Owners:
+
+- **Anforderungen und Produktentscheidungen:** Funktionsumfang, Nutzerführung, Priorisierung
+  (z. B. Dokumentansicht, Gesamtentwurf, Datei-Import, Startverhalten)
+- **Fachliche Ausrichtung:** Abgleich mit dem Ablauf in Kanzleien und Patentabteilungen,
+  z. B. die Neuausrichtung der Wissensbasis vom Nachschlage-Chatbot hin zu Regeln, die die KI
+  beim Schreiben befolgt
+- **Test und Abnahme:** Prüfung jedes Entwicklungsschritts mit fiktiven Erfindungen,
+  Meldung von Fehlern und Schwachstellen
+- **Design:** Oberfläche, Farbschema, Logo
+
+Das Projekt zeigt damit auch, wie sich mit heutigen KI-Werkzeugen aus Fachwissen und klaren
+Anforderungen ein getestetes, installierbares Werkzeug entwickeln lässt.
 
 ## Haftungsausschluss
 
