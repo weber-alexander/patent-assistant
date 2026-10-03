@@ -194,6 +194,7 @@ src/patent_assistant/
 - Weitere Templates (EP, PCT)
 - Rich-Text-Editor mit Formatierung
 - Startskript für macOS
+- React-Frontend statt Streamlit
 
 ## Entstehung
 
