@@ -1,0 +1,16 @@
+{
+  "format_version": 1,
+  "project_name": "Beispiel_Mähroboter",
+  "invention": "Ein autonomer Mähroboter, der zusätzlich zu herkömmlichen Navigationssensoren mit einer Infrarot-Wärmebildkamera und einem Körperschallmikrofon ausgestattet ist, die auf den Bereich vor dem Mähdeck gerichtet sind. Eine integrierte Steuereinheit analysiert die Sensordaten. Erkennt die Kamera eine Wärmequelle am Boden (z.B. zwi ada dawdschen 10 und 30 cm Größe) und registriert das Mikrofon gleichzeitig spezifische Atem- oder Raschelgeräusche, löst das System eine sofortige Notbremsung der Schneidklingen aus. Die Klingen werden innerhalb von 0,5 Sekunden arretiert, der Mähmotor wird gestoppt und der Roboter ändert automatisch seine Fahrtrichtung. TEST",
+  "known_prior_art": "",
+  "claims": "",
+  "title": "",
+  "field": "",
+  "prior_art": "",
+  "problem": "",
+  "solution": "",
+  "embodiment": "",
+  "abstract": "",
+  "questions": "",
+  "model": "qwen3:4b-instruct"
+}

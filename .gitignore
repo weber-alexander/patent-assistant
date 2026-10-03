@@ -8,6 +8,7 @@ __pycache__/
 # Eigene Projekte nicht veröffentlichen, nur das Beispiel
 projects/*
 !projects/Beispiel_Messsystem.json
+!projects/Beispiel_*.json
 
 
 # Lokal erzeugt bzw. große Dateien
