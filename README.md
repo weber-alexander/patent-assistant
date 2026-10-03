@@ -48,7 +48,7 @@ Das Leitprinzip: **KI schreibt, Regeln prüfen, der Mensch entscheidet.**
 - **Platzhalter statt Erfindungen:** Fehlende Angaben werden als `[ERGÄNZEN: …]` markiert statt halluziniert
 - **Dokumentansicht** im Layout des Exports, direkt bearbeitbar
 - **Word-Export (DOCX)** mit gelb markierten offenen Platzhaltern
-- **Wissensbasis (RAG)** mit kuratiertem Regelkatalog (PatG, PatV, DPMA-Praxis)
+- **Wissensbasis (RAG)** mit Regelkatalog (PatG, PatV, DPMA-Praxis)
 - Korrekturlesen, Rückgängig, Projekte speichern und laden
 
 <p>
@@ -131,7 +131,7 @@ Die Arbeitsanweisungen für die KI liegen gebündelt in
 
 ## Wissensbasis
 
-Der Ordner `knowledge/` enthält den kuratierten Regelkatalog `rules_dpma.txt`
+Der Ordner `knowledge/` enthält den Regelkatalog `rules_dpma.txt`
 (eine Regel pro Absatz, mit Fundstelle). Zusätzlich können PDF- oder TXT-Dateien abgelegt werden, z. B.:
 
 - [Patentgesetz (PatG)](https://www.gesetze-im-internet.de/patg/PatG.pdf)
@@ -144,7 +144,7 @@ Kanzleien können hier auch eigene Leitfäden und Formulierungsvorgaben hinterle
 ## Erkenntnisse aus der Entwicklung
 
 - **Rohe Gesetzestexte sind schlechte RAG-Quellen.** Die semantische Suche lieferte oft irrelevante
-  Treffer (Blattformat, Gebühren). Ein kurzer, kuratierter Regelkatalog brachte präzise Treffer und
+  Treffer (Blattformat, Gebühren). Ein kurzer Regelkatalog brachte präzise Treffer und
   sichtbar sachlichere Texte.
 - **Kleine Modelle befolgen Regeln nur teilweise.** Prompts mit Beispielen aus fremden Fachgebieten
   wirken besser als reine Regellisten. Was zuverlässig prüfbar ist, prüft deshalb Code statt KI.
