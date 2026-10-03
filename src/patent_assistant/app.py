@@ -815,4 +815,5 @@ def main() -> None:
     PAGE_RENDERERS[sidebar()]()
 
 
-main()
+if __name__ == "__main__":
+    main()
