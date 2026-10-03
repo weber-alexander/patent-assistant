@@ -20,6 +20,7 @@ class Settings:
     context_window: int
     projects_dir: Path
     knowledge_dir: Path
+    state_file: Path
 
     @property
     def llm_options(self) -> dict[str, float | int]:
@@ -50,6 +51,7 @@ def load_settings() -> Settings:
         context_window=int(os.getenv("PA_CONTEXT_WINDOW", "8192")),
         projects_dir=Path(os.getenv("PA_PROJECTS_DIR", "projects")),
         knowledge_dir=Path(os.getenv("PA_KNOWLEDGE_DIR", "knowledge")),
+        state_file=Path(os.getenv("PA_STATE_FILE", ".user_state.json")),
     )
 
 

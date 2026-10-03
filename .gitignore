@@ -16,3 +16,6 @@ knowledge/*.pdf
 
 # Local launcher state
 .shortcuts-created
+
+# Personal preferences (last used model)
+.user_state.json

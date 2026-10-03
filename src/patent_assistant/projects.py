@@ -10,7 +10,8 @@ from patent_assistant.config import settings
 from patent_assistant.prompts import SECTIONS
 
 FORMAT_VERSION = 1
-FIELDS: tuple[str, ...] = ("project_name", "invention", "known_prior_art", *SECTIONS)
+# "model" is metadata: the AI model last used for this project
+FIELDS: tuple[str, ...] = ("project_name", "invention", "known_prior_art", *SECTIONS, "model")
 
 # Field names of the German prototype (files saved before format version 1)
 LEGACY_KEYS = {
@@ -44,8 +45,14 @@ def _path(name: str) -> Path:
 
 
 def list_projects() -> list[str]:
+    """Project names, most recently modified first."""
     settings.projects_dir.mkdir(exist_ok=True)
-    return sorted(p.stem for p in settings.projects_dir.glob("*.json"))
+    files = sorted(
+        settings.projects_dir.glob("*.json"),
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    )
+    return [path.stem for path in files]
 
 
 def exists(name: str) -> bool:

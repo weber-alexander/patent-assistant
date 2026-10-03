@@ -7,10 +7,18 @@ from __future__ import annotations
 
 import html
 import time
+from pathlib import Path
 
 import streamlit as st
 
-from patent_assistant import document_export, file_import, knowledge_base, llm, projects
+from patent_assistant import (
+    document_export,
+    file_import,
+    knowledge_base,
+    llm,
+    projects,
+    user_state,
+)
 from patent_assistant.claim_checker import Finding, check_claims
 from patent_assistant.config import MODEL_LABELS, settings
 from patent_assistant.prompts import (
@@ -33,6 +41,7 @@ PAGES = {
 }
 SEVERITY_LABEL = {"error": "Fehler", "warning": "Warnung", "info": "Hinweis"}
 ABSTRACT_MAX_CHARS = 1500
+LOGO = Path(__file__).parent / "assets" / "logo.png"
 
 CSS = """
 <style>
@@ -80,6 +89,8 @@ section[data-testid="stSidebar"] {background-color: #E2E7EC;}
     .st-key-w_invention_known_prior_art textarea {min-height: 6lh;}
     .st-key-paper textarea {min-height: 2lh; max-height: none;}
 }
+section[data-testid="stSidebar"] .block-container,
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] {padding-top: 1rem;}
 </style>
 """
 
@@ -102,6 +113,9 @@ def init_state() -> None:
     st.session_state.setdefault("sources", {})
     st.session_state.setdefault("durations", {})
     st.session_state.setdefault("current_file", None)
+    if "model" not in st.session_state:
+        last = user_state.load().get("last_model")
+        st.session_state.model = last if last in settings.chat_models else settings.chat_models[0]
 
 
 def data() -> dict[str, str]:
@@ -403,16 +417,25 @@ def export_button(key: str) -> None:
 # ======================================================================
 
 
+def _remember_model() -> None:
+    """Store the selected model in the project and as global preference."""
+    data()["model"] = st.session_state.model
+    user_state.save(last_model=st.session_state.model)
+
+
 def _open_project(content: dict[str, str], filename: str | None) -> None:
     st.session_state.data = content
     st.session_state.backup = {}
     st.session_state.sources = {}
     st.session_state.durations = {}
     st.session_state.current_file = filename
+    if content.get("model") in settings.chat_models:
+        st.session_state.next_model = content["model"]
     st.rerun()
 
 
 def _save(filename: str) -> None:
+    data()["model"] = st.session_state.model
     projects.save_project(filename, data())
     st.session_state.current_file = filename
     notify(f"Gespeichert: {filename}")
@@ -421,6 +444,7 @@ def _save(filename: str) -> None:
 
 def sidebar() -> str:
     with st.sidebar:
+        st.image(str(LOGO), width=120)
         st.markdown("## Patent-Assistent")
         st.caption("Lokal · vertraulich · kein Rechtsrat")
 
@@ -478,10 +502,13 @@ def sidebar() -> str:
 
         st.markdown('<p class="nav-title">EINSTELLUNGEN</p>', unsafe_allow_html=True)
         with st.expander("⚙️ KI-Einstellungen"):
+            if "next_model" in st.session_state:
+                st.session_state.model = st.session_state.pop("next_model")
             st.selectbox(
                 "Modell",
                 settings.chat_models,
                 key="model",
+                on_change=_remember_model,
                 format_func=lambda name: MODEL_LABELS.get(name, name),
                 help="Das größere Modell liefert bessere Texte, braucht aber "
                 "mehr Zeit und Arbeitsspeicher (empfohlen ab 16 GB RAM).",
@@ -779,7 +806,7 @@ PAGE_RENDERERS = {
 
 
 def main() -> None:
-    st.set_page_config(page_title="Patent-Assistent", page_icon="📄", layout="wide")
+    st.set_page_config(page_title="Patent-Assistent", page_icon=str(LOGO), layout="wide")
     st.markdown(CSS, unsafe_allow_html=True)
     init_state()
     ensure_environment()

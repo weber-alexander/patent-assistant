@@ -13,7 +13,7 @@ foreach ($folder in $folders) {
     $shortcut.TargetPath = $target
     $shortcut.WorkingDirectory = $root
     $shortcut.WindowStyle = 7          # 7 = start minimized
-    $shortcut.IconLocation = "$env:SystemRoot\System32\imageres.dll,111"
+    $shortcut.IconLocation = Join-Path $root "src\patent_assistant\assets\logo.ico"
     $shortcut.Description = "Patent-Assistent starten"
     $shortcut.Save()
 }
