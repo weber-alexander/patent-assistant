@@ -199,8 +199,7 @@ src/patent_assistant/
 ## Entstehung
 
 Dieses Projekt wurde **KI-gestützt entwickelt**. Der gesamte Programmcode wurde im Dialog mit
-**Claude Opus 5.5 (Anthropic)** erstellt. Ich bin kein Softwareentwickler, sondern IT-Softwareberater im
-Patentumfeld.
+**Claude Opus 5.5 (Anthropic)** erstellt. Ich bin kein Softwareentwickler, sondern IT-Softwareberater. Dieses Projekt ist ein privates Hobbyprojekt und steht in keiner Verbindung zu meinem Arbeitgeber oder dessen Produkten.
 
 Meine Rolle entsprach der eines Product Owners:
 
@@ -212,9 +211,6 @@ Meine Rolle entsprach der eines Product Owners:
 - **Test und Abnahme:** Prüfung jedes Entwicklungsschritts mit fiktiven Erfindungen,
   Meldung von Fehlern und Schwachstellen
 - **Design:** Oberfläche, Farbschema, Logo
-
-Das Projekt zeigt damit auch, wie sich mit heutigen KI-Werkzeugen aus Fachwissen und klaren
-Anforderungen ein getestetes, installierbares Werkzeug entwickeln lässt.
 
 ## Haftungsausschluss
 
